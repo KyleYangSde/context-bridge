@@ -1,0 +1,142 @@
+.cb-card {
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius);
+  padding: 16px 18px 18px;
+  box-shadow: var(--cb-shadow-soft);
+}
+
+.cb-card--compact {
+  padding: 12px 14px;
+}
+
+.cb-card--scan-fail {
+  border-color: rgba(255, 59, 48, 0.35);
+}
+
+.cb-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cb-card__meta {
+  font-size: 12px;
+  color: var(--cb-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cb-card__tool {
+  font-weight: 600;
+  color: var(--cb-ink);
+  font-family: var(--cb-mono);
+  font-size: 11px;
+}
+
+.cb-card__sep {
+  opacity: 0.5;
+}
+
+.cb-card__super {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.cb-card__banner {
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 8px 10px;
+  border-radius: var(--cb-radius-sm);
+  margin-bottom: 12px;
+}
+
+.cb-card__banner--danger {
+  background: var(--cb-state-rejected-bg);
+  color: var(--cb-state-rejected-fg);
+}
+
+.cb-card__banner--warn {
+  background: var(--cb-state-pending-bg);
+  color: var(--cb-state-pending-fg);
+}
+
+.cb-card__goal-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cb-muted);
+  margin-bottom: 4px;
+}
+
+.cb-card__goal p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.cb-card__goal-input {
+  width: 100%;
+  border: 1px solid var(--cb-line);
+  border-radius: var(--cb-radius-sm);
+  padding: 8px 10px;
+  resize: none;
+  background: var(--cb-surface-2);
+  color: var(--cb-ink);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.cb-card__goal-input:focus {
+  outline: none;
+  border-color: var(--cb-accent);
+  box-shadow: 0 0 0 3px var(--cb-accent-soft);
+}
+
+.cb-card__section {
+  margin-top: 14px;
+}
+
+.cb-card__section h3 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cb-muted);
+}
+
+.cb-card__section ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--cb-ink);
+}
+
+.cb-card__section li + li {
+  margin-top: 2px;
+}
+
+.cb-card__empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cb-muted);
+}
+
+.cb-card__compact-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--cb-muted);
+}

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Context Bridge — PC + iOS 线框</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --ink: #1d1d1f;
+    --muted: #86868b;
+    --line: rgba(0,0,0,0.08);
+    --accent: #0071e3;
+    --ok: #34c759;
+    --warn: #ff9f0a;
+    --radius: 14px;
+    --shadow: 0 18px 50px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font); color: var(--ink);
+    background: var(--bg); min-height: 100vh;
+  }
+  header.page {
+    max-width: 1100px; margin: 0 auto; padding: 28px 24px 8px;
+  }
+  header.page h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; }
+  header.page p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .board {
+    max-width: 1100px; margin: 0 auto; padding: 20px 24px 48px;
+    display: grid; grid-template-columns: 1.4fr 0.7fr; gap: 28px; align-items: start;
+  }
+  @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+  .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+  }
+  /* —— PC desktop mock —— */
+  .desktop {
+    background: linear-gradient(160deg, #d2d2d7, #ebebef);
+    border-radius: 18px; padding: 28px 24px 24px; min-height: 560px;
+    position: relative; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  .menubar {
+    position: absolute; left: 0; right: 0; top: 0; height: 28px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 16px; font-size: 12px; color: var(--ink); gap: 14px;
+  }
+  .tray {
+    display: flex; align-items: center; gap: 8px; cursor: default;
+  }
+  .tray-icon {
+    width: 18px; height: 18px; border-radius: 5px;
+    background: var(--ink); color: #fff; font-size: 10px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+  .tray-menu {
+    position: absolute; top: 36px; right: 20px; width: 220px;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+    border-radius: 10px; box-shadow: var(--shadow); padding: 6px;
+    border: 1px solid var(--line); font-size: 13px;
+  }
+  .tray-menu div {
+    padding: 8px 10px; border-radius: 6px;
+  }
+  .tray-menu div:hover { background: rgba(0,113,227,0.12); }
+  .tray-menu .sep { height: 1px; background: var(--line); margin: 4px 6px; padding: 0; }
+  .tray-menu .dim { color: var(--muted); font-size: 11px; padding: 4px 10px 6px; }
+  /* main window */
+  .win {
+    margin: 48px auto 0; width: min(100%, 420px);
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .win-chrome {
+    height: 40px; display: flex; align-items: center; gap: 8px;
+    padding: 0 14px; border-bottom: 1px solid var(--line);
+    background: #fafafa;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .win-title { flex: 1; text-align: center; font-size: 12px; color: var(--muted); margin-right: 42px; }
+  .win-body { padding: 16px 18px 18px; }
+  .status-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 999px; background: #fff8e8; color: #9a6700;
+  }
+
+  .states {
+    display: flex; flex-wrap: wrap; gap: 4px; margin: -6px 0 14px;
+  }
+  .states .st {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.02em;
+    padding: 2px 7px; border-radius: 999px;
+    color: var(--muted); background: #eeeef0; border: 1px solid transparent;
+  }
+  .states .st.on {
+    color: #9a6700; background: #fff8e8; border-color: rgba(255,159,10,0.35);
+  }
+  .states .st.ok { color: #1b7a3d; background: #e8f8ee; }
+  .states .st.bad { color: #9b1c1c; background: #fdecec; }
+  .pill::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--warn);
+  }
+  .meta { font-size: 11px; color: var(--muted); }
+  .field { margin-bottom: 12px; }
+  .field .k { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .field .v {
+    font-size: 13px; line-height: 1.45; padding: 8px 10px;
+    background: #f5f5f7; border-radius: 8px; border: 1px solid transparent;
+  }
+  .field.edit .v { border-color: rgba(0,113,227,0.35); background: #fff; box-shadow: 0 0 0 3px rgba(0,113,227,0.08); }
+  ul.compact { margin: 0; padding-left: 16px; font-size: 12px; color: var(--ink); }
+  ul.compact li { margin: 2px 0; }
+  .files { font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #424245; }
+  .actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;
+  }
+  .btn {
+    appearance: none; border: none; border-radius: 980px;
+    padding: 9px 12px; font-size: 12px; font-weight: 560; font-family: inherit;
+    cursor: default; text-align: center;
+  }
+  .btn.primary { background: var(--accent); color: #fff; grid-column: 1 / -1; }
+  .btn.secondary { background: #e8e8ed; color: var(--ink); }
+  .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .note {
+    margin-top: 14px; font-size: 11px; color: var(--muted); line-height: 1.4;
+    padding: 8px 10px; border-radius: 8px; background: #fafafa; border: 1px dashed var(--line);
+  }
+  /* —— Mobile placeholder —— */
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .phone {
+    width: 220px; height: 440px; background: #111; border-radius: 32px;
+    padding: 12px; box-shadow: var(--shadow); position: relative;
+  }
+  .phone-screen {
+    background: #f2f2f7; border-radius: 24px; height: 100%; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .notch {
+    height: 28px; display: flex; align-items: flex-end; justify-content: center;
+    font-size: 10px; font-weight: 600; padding-bottom: 4px;
+  }
+  .m-header {
+    padding: 8px 14px 10px; font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .m-card {
+    margin: 0 12px 10px; background: #fff; border-radius: 12px;
+    padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .m-card .t { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .m-card .s { font-size: 11px; color: var(--muted); line-height: 1.35; }
+  .m-badge {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    color: #9a6700; background: #fff8e8; padding: 2px 7px; border-radius: 999px; margin-bottom: 6px;
+  }
+  .m-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .m-actions span {
+    flex: 1; text-align: center; font-size: 11px; font-weight: 600;
+    padding: 8px; border-radius: 10px; background: #e8e8ed;
+  }
+  .m-actions span.ok { background: var(--accent); color: #fff; }
+  .m-foot {
+    margin-top: auto; padding: 10px 14px 16px; font-size: 10px; color: var(--muted); text-align: center;
+  }
+  .anno {
+    font-size: 12px; color: var(--muted); line-height: 1.5; max-width: 220px; text-align: left;
+  }
+  footer.page {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px 40px;
+    font-size: 12px; color: var(--muted); line-height: 1.5;
+  }
+  footer.page code { font-size: 11px; background: #eee; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <header class="page">
+    <h1>Context Bridge · 线框 D0（PC ∥ iOS）</h1>
+    <p>PC + 手机 <strong>共享一套 Web/React UI</strong>（Electron 托盘加载同一预览皮；Expo 复用列表/详情/状态徽章）。PC 写卡；手机只读+批准/驳回+推送。多向 handoff。</p>
+  </header>
+
+  <div class="board">
+    <section>
+      <div class="label">PC — 托盘 + 预览窗（MVP）</div>
+      <div class="desktop">
+        <div class="menubar">
+          <span class="meta">Fri 21:22</span>
+          <div class="tray" title="Context Bridge">
+            <div class="tray-icon">CB</div>
+          </div>
+        </div>
+        <div class="tray-menu" aria-label="tray menu">
+          <div class="dim">repo: context-bridge</div>
+          <div>从 Grok Bot 生成交接</div>
+          <div>从 Codex 生成交接</div>
+          <div>从 Claude / OpenCode 生成…</div>
+          <div>打开当前 HANDOFF</div>
+          <div class="sep"></div>
+          <div>选择仓库…</div>
+          <div>退出</div>
+        </div>
+
+        <div class="win">
+          <div class="win-chrome">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <div class="win-title">Context Bridge</div>
+          </div>
+          <div class="win-body">
+            <div class="status-row">
+              <span class="pill">pending_review</span>
+              <span class="meta">source: grok-bot · sess_…42 · 刚刚</span>
+            </div>
+            <div class="states" aria-label="handoff states">
+              <span class="st">draft</span>
+              <span class="st">ready</span>
+              <span class="st on">pending_review</span>
+              <span class="st">approved</span>
+              <span class="st">rejected</span>
+              <span class="st">consumed</span>
+              <span class="st">superseded</span>
+              <span class="st">expired</span>
+            </div>
+
+            <div class="field edit">
+              <div class="k">Goal</div>
+              <div class="v">把 Grok Bot 结论交接到 Codex（亦可反向）</div>
+            </div>
+            <div class="field">
+              <div class="k">Decisions</div>
+              <div class="v"><ul class="compact">
+                <li>文件交接，不做实时双向同步</li>
+                <li>禁 raw transcript</li>
+              </ul></div>
+            </div>
+            <div class="field">
+              <div class="k">Constraints · Open</div>
+              <div class="v"><ul class="compact">
+                <li>密钥扫描不过则拒写</li>
+                <li class="meta" style="list-style:none;margin-left:-16px;color:var(--muted)">Open: 用户是否确认 MVP？</li>
+              </ul></div>
+            </div>
+            <div class="field">
+              <div class="k">Files</div>
+              <div class="v files">context-bridge/HANDOFF.v1.md</div>
+            </div>
+
+            <div class="actions">
+              <div class="btn primary">写入 .agent-bridge/HANDOFF.md</div>
+              <div class="btn secondary">换来源重新生成</div>
+              <div class="btn ghost">复制路径</div>
+            </div>
+            <div class="note">secrets_scan fail → 拒写（S5）。approved 才允许下游当现行；reject 必填 reason；新卡 supersedes 旧卡（S4）。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone-wrap">
+      <div class="label" style="align-self:flex-start;width:100%">Mobile (Expo) — 与 PC 同皮</div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="notch">9:41</div>
+          <div class="m-header">交接</div>
+          <div class="m-card">
+            <div class="m-badge">pending_review</div>
+            <div class="t">交接到 Claude Code</div>
+            <div class="s">grok-bot · 2 分钟前<br/>approved → 下游可当现行 · rejected 须填 reason</div>
+            <div class="m-actions">
+              <span>rejected</span>
+              <span class="ok">approved</span>
+            </div>
+          </div>
+          <div class="m-card" style="opacity:0.55">
+            <div class="t" style="font-size:12px;color:var(--muted)">更早 · superseded / consumed</div>
+            <div class="s">Schema 草稿交接 · 昨天</div>
+          </div>
+          <div class="m-foot">与 PC 同卡 · 推送打开 · 批准/驳回 · 不跑 Agent</div>
+        </div>
+      </div>
+      <p class="anno">与 PC 同 Sprint：读同一 HANDOFF；同步通道（自托管 API / iCloud 目录）产品拍板。不做本机 Agent、不做正文重编辑。</p>
+    </section>
+  </div>
+
+  <footer class="page">
+    业务状态机：<code>draft → ready → pending_review → approved|rejected → consumed|superseded|expired</code>。对齐 HANDOFF / SYNC / 场景 S1–S5。<br/>
+    路径：<code>/workspace/context-bridge/design/wireframe-pc-tray.html</code> · 共享设计令牌 + HandoffCard 组件；Electron / Expo 各包一层壳。等「做」进视觉规约。
+  </footer>
+</body>
+</html>

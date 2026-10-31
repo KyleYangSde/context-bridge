@@ -1,0 +1,36 @@
+{
+  "name": "context-bridge",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Context Bridge \u2014 HANDOFF.v1 local bus, Electron tray + Capacitor phone (Relay sync)",
+  "workspaces": [
+    "packages/*",
+    "ui"
+  ],
+  "scripts": {
+    "build": "npm run build -w @context-bridge/core && npm run build -w @context-bridge/adapters && npm run build -w @context-bridge/local-api && npm run build -w @context-bridge/relay",
+    "build:core": "npm run build -w @context-bridge/core",
+    "start:local-api": "npm run start -w @context-bridge/local-api",
+    "start:relay": "npm run start -w @context-bridge/relay",
+    "dev:local-api": "npm run dev -w @context-bridge/local-api",
+    "dev:relay": "npm run dev -w @context-bridge/relay",
+    "test": "npm run test -w @context-bridge/core --if-present",
+    "dev:web": "npm run dev -w @context-bridge/ui",
+    "dev:electron": "npm run dev:electron -w @context-bridge/ui",
+    "electron": "npm run electron -w @context-bridge/ui",
+    "build:ui": "npm run build -w @context-bridge/ui",
+    "smoke:first-gate": "node scripts/smoke-first-gate.mjs",
+    "smoke:push-log": "node scripts/smoke-push-log.mjs",
+    "test:adapters": "npm run test:export -w @context-bridge/adapters",
+    "cap:sync": "npm run build:ui && npm run cap:sync -w @context-bridge/ui",
+    "cap:open:android": "npm run cap:open:android -w @context-bridge/ui",
+    "cap:open:ios": "npm run cap:open:ios -w @context-bridge/ui"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "allowScripts": {
+    "electron@41.7.1": true,
+    "esbuild@0.28.2": true
+  }
+}

@@ -1,0 +1,66 @@
+.cb-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: var(--cb-radius-pill);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.cb-state--sm {
+  font-size: 10px;
+  padding: 2px 8px;
+}
+
+.cb-state--md {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+.cb-state__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.cb-state--draft {
+  background: var(--cb-state-draft-bg);
+  color: var(--cb-state-draft-fg);
+}
+.cb-state--ready {
+  background: var(--cb-state-ready-bg);
+  color: var(--cb-state-ready-fg);
+}
+.cb-state--pending_review {
+  background: var(--cb-state-pending-bg);
+  color: var(--cb-state-pending-fg);
+}
+.cb-state--approved {
+  background: var(--cb-state-approved-bg);
+  color: var(--cb-state-approved-fg);
+}
+.cb-state--rejected {
+  background: var(--cb-state-rejected-bg);
+  color: var(--cb-state-rejected-fg);
+}
+.cb-state--consumed {
+  background: var(--cb-state-consumed-bg);
+  color: var(--cb-state-consumed-fg);
+}
+.cb-state--superseded {
+  background: var(--cb-state-superseded-bg);
+  color: var(--cb-state-superseded-fg);
+}
+.cb-state--expired {
+  background: var(--cb-state-expired-bg);
+  color: var(--cb-state-expired-fg);
+}
+
+.cb-state-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}

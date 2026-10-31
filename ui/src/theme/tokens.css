@@ -1,0 +1,67 @@
+:root {
+  --cb-bg: #f5f5f7;
+  --cb-surface: #ffffff;
+  --cb-surface-2: #fafafa;
+  --cb-ink: #1d1d1f;
+  --cb-muted: #86868b;
+  --cb-line: rgba(0, 0, 0, 0.08);
+  --cb-accent: #0071e3;
+  --cb-accent-soft: rgba(0, 113, 227, 0.12);
+  --cb-ok: #34c759;
+  --cb-warn: #ff9f0a;
+  --cb-danger: #ff3b30;
+  --cb-radius: 14px;
+  --cb-radius-sm: 10px;
+  --cb-radius-pill: 999px;
+  --cb-shadow: 0 18px 50px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --cb-shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --cb-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --cb-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* State colors */
+  --cb-state-draft-bg: #f0f0f2;
+  --cb-state-draft-fg: #636366;
+  --cb-state-ready-bg: #e8f4ff;
+  --cb-state-ready-fg: #0071e3;
+  --cb-state-pending-bg: #fff8e8;
+  --cb-state-pending-fg: #9a6700;
+  --cb-state-approved-bg: #e8f8ee;
+  --cb-state-approved-fg: #1b7a3d;
+  --cb-state-rejected-bg: #ffecec;
+  --cb-state-rejected-fg: #c41e16;
+  --cb-state-consumed-bg: #efeaff;
+  --cb-state-consumed-fg: #5e5ce6;
+  --cb-state-superseded-bg: #f0f0f2;
+  --cb-state-superseded-fg: #86868b;
+  --cb-state-expired-bg: #f5ebe0;
+  --cb-state-expired-fg: #8a5a2b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--cb-font);
+  color: var(--cb-ink);
+  background: var(--cb-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

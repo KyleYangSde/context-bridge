@@ -1,0 +1,20 @@
+import type { CapacitorConfig } from '@capacitor/cli'
+
+/**
+ * Cap CLI on this box parses .json (see capacitor.config.json).
+ * Mobile shell talks **Relay only** (:17832) — never local-api :17831.
+ */
+const config: CapacitorConfig = {
+  appId: 'bridge.context.app',
+  appName: 'Context Bridge',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https',
+    cleartext: true,
+  },
+  android: {
+    allowMixedContent: true,
+  },
+}
+
+export default config

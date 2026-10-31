@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Context Bridge</string>
+    <string name="title_activity_main">Context Bridge</string>
+    <string name="package_name">bridge.context.app</string>
+    <string name="custom_url_scheme">bridge.context.app</string>
+</resources>

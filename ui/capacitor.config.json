@@ -1,0 +1,13 @@
+{
+  "appId": "bridge.context.app",
+  "appName": "Context Bridge",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {},
+  "android": {
+    "allowMixedContent": true
+  }
+}
