@@ -25,3 +25,19 @@
 - Relay persist / 401 / handoff_locked：PASS（master）
 - 浏览器 tray→mobile→approved：PASS
 - Cap APK assemble + install：PASS；**模拟器内批准截图：DEBT**
+
+## 收口判定 · 2026-11-01 00:08 Asia/Shanghai（诚实）
+
+### PASS
+1. **PC Electron**：真托盘 Live 写卡 → `pending_review`（`verify/electron-tray-live-write.png`）
+2. **协议 / Relay**：`0.0.0.0:17832`、磁盘持久化、`force:true` / `handoff_locked`、401 重配对
+3. **同皮 mobile Live**：浏览器 `?shell=mobile&mode=live` 经 Relay 批准 → `approved`（`verify/cap-ui-relay-approve.png` + tray→mobile 链路）
+4. **Cap 工程**：`assembleDebug` SUCCESS；APK 可 adb install；native 强制 live（`84fb661`）；`adb reverse` 绕过 guest 网卡 DOWN
+5. **公开仓**：冷 clone + `smoke:first-gate` 不回退
+
+### FAIL / DEBT（一期未齐）
+- **Cap Android 模拟器/真机内批准截图**：box 无可用 KVM，TCG 软加速下 Launcher/SystemUI ANR + WebView 白屏，未能在 APK 内完成批准手势。
+- **补齐条件**：有 KVM 的机器或物理 Android，装 `app-debug.apk`，`adb reverse tcp:17832 tcp:17832`（或 LAN `VITE_RELAY_URL`），跑通批准截图。
+
+### 产品口径
+**可演示的一期内核已在公开仓**（PC 托盘写卡 + Relay 批准链路 + Cap 同皮 UI）。**「Cap APK 模拟器批准」不算过**——勿对外宣称双端原生验完。

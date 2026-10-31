@@ -46,3 +46,17 @@ Store returned `token` as `Authorization: Bearer …`. Real APNs later; stub eve
 
 - Push Notifications → `apns_token` on register.
 - Local Network may be required on iOS 14+ to reach LAN Relay; allow when prompted.
+
+## Emulator networking (box / nested VM)
+
+Default emulator path: bake `VITE_RELAY_URL=http://10.0.2.2:17832` so the guest reaches the host’s Relay.
+
+When guest NICs are down (`ip link` shows `eth0`/`wlan0` **DOWN**, or `curl http://10.0.2.2:17832` → Network unreachable):
+
+1. On the **host** (where Relay listens):  
+   `adb reverse tcp:17832 tcp:17832`
+2. Rebuild Cap with loopback:  
+   `VITE_RELAY_URL=http://127.0.0.1:17832` → `npm run build && npx cap sync android` → `assembleDebug` → `adb install -r`
+3. Cap WebView then hits `127.0.0.1:17832` inside the guest; adb reverse tunnels to the host Relay.
+
+Do **not** point Cap at local-api `:17831`. Prefer `10.0.2.2` when guest net works; use reverse + `127.0.0.1` only as the DOWN-NIC fallback. Real devices still use the PC’s LAN IP `:17832`.
