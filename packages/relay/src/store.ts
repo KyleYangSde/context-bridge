@@ -80,8 +80,25 @@ export function findDeviceByToken(store: RelayStore, token: string | null): Devi
 
 export function putHandoffOnRelay(
   store: RelayStore,
-  input: { frontmatter: HandoffFrontmatter; body: string } | { markdown: string },
+  input:
+    | { frontmatter: HandoffFrontmatter; body: string; force?: boolean }
+    | { markdown: string; force?: boolean },
 ): { doc: HandoffDocument; status: HandoffStatus } {
+  // Single-slot: refuse silent overwrite while under review / approved (pass force:true to supersede).
+  if (
+    (store.status.state === "pending_review" || store.status.state === "approved") &&
+    input.force !== true
+  ) {
+    const err = new Error("handoff_locked") as Error & { status: number; body: unknown };
+    err.status = 409;
+    err.body = {
+      error: "handoff_locked",
+      state: store.status.state,
+      current_as_of: store.status.current_as_of,
+      message: "pass force:true to overwrite a pending_review/approved handoff",
+    };
+    throw err;
+  }
   let doc: HandoffDocument;
   if ("markdown" in input && input.markdown != null) {
     doc = parseHandoffMarkdown(input.markdown);

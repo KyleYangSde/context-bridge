@@ -198,7 +198,7 @@ export function createRelayServer(opts: RelayOptions = {}) {
           });
         } catch (e) {
           const err = e as Error & { status?: number; body?: unknown };
-          if (err.status === 422) return json(res, 422, err.body);
+          if (err.status === 422 || err.status === 409) return json(res, err.status, err.body);
           throw e;
         }
       }
