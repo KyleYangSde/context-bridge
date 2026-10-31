@@ -17,3 +17,11 @@
 
 ## 已知（不挡一期收口）
 - **单槽 handoff 竞态**：并行 Live 写卡会互相覆盖；Relay 现对 `pending_review`/`approved` 默认 409，需 `force:true` 才覆盖。UI 仍可主动 force。
+
+- **Cap 模拟器批准 DEBT（无 KVM）**：box soft-accel AVD → System UI ANR / 白屏，APK 内无法点批准截图。同皮 `?shell=mobile&mode=live` → Relay PATCH approve **PASS**（`verify/cap-ui-relay-approve.png`）。APK install + `adb reverse` + 烤 `127.0.0.1:17832` 工程闸 PASS；真机/KVM 补截图。
+
+## 收口状态（2026-11-01 00:08 Asia/Shanghai）
+- PC Electron Live write：PASS
+- Relay persist / 401 / handoff_locked：PASS（master）
+- 浏览器 tray→mobile→approved：PASS
+- Cap APK assemble + install：PASS；**模拟器内批准截图：DEBT**
