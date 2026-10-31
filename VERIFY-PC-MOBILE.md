@@ -12,7 +12,7 @@ Verified on box `2026-10-31` ~22:00 UTC+8. Repo: [KyleYangSde/context-bridge](ht
 | Vite tray/mobile HTML | **PASS** | `GET :5173/?shell=tray\|mobile&mode=live` → 200 + `#root` |
 | Electron Live tray **write card** | **PASS** | `verify/electron-tray.log` + `verify/electron-tray-live-write.png` — UI banner `已写入 · state → pending_review`; local-api goal `Electron Live verify write 2026-10-31T13:58:06.869Z` |
 | Cap mobile shell binds Relay only | **PASS (code)** | `ui/src/App.tsx`: Cap / `?shell=mobile` → Relay `:17832` only, never `:17831` |
-| Cap Android `assembleDebug` / emulator approve | **FAIL (box)** | No JDK; `apt` cannot install `openjdk-17` (Debian InRelease 500 / not signed). No `ANDROID_HOME` / `local.properties`. Emulator not runnable on this Linux box. |
+| Cap Android `assembleDebug` / emulator approve | **PARTIAL** | **assembleDebug PASS** → `ui/android/app/build/outputs/apk/debug/app-debug.apk` (`verify/cap-android-build.log`). **adb install PASS**. Emulator reached `device` + `boot_completed=1` under TCG. **Approve FAIL**: nested KVM BUG → `-accel off`; guest `10.0.2.2` unreachable; Cap/System UI ANR; Relay still `pending_review`. See Cap section + `verify/cap-android-blocker.txt`. |
 | Cap iOS device | **N/A** | Needs macOS + Xcode |
 
 ## Electron Live write (how)
@@ -22,31 +22,43 @@ Verified on box `2026-10-31` ~22:00 UTC+8. Repo: [KyleYangSde/context-bridge](ht
 3. `CB_SHOW=1 CB_UI_URL='http://127.0.0.1:5173/?shell=tray&mode=live' electron electron/main.cjs --remote-debugging-port=9222`
 4. In tray Live: set goal → **写入 .agent-bridge/** → green `已写入 · pending_review`
 
-## Cap → Relay on Android emulator (user machine)
+## Cap → Relay on Android emulator
 
-Blocker on this box: **JDK + Android SDK missing; apt broken for OpenJDK**.
+### Box status (2026-10-31 ~22:55 Asia/Shanghai)
 
-On your Mac/Windows with Android Studio:
+| Step | Result |
+|------|--------|
+| SDK `/workspace/android-sdk` + `local.properties` | PASS |
+| JDK | Temurin **21** at `/tmp/jdk-21` (Cap needs 21; 17 fails `invalid source release: 21`) |
+| `VITE_RELAY_URL` | Prefer `http://10.0.2.2:17832` (never `:17831`). Box guest net was down → tried `adb reverse` + `127.0.0.1:17832` only as fallback |
+| `npm run build && npx cap sync android` | PASS |
+| `./gradlew assembleDebug` | **PASS** — APK `ui/android/app/build/outputs/apk/debug/app-debug.apk` |
+| `adb install -r` | PASS (`verify/cap-android-install.log`) |
+| Emulator AVD `cb_api34` | Booted (~11 min TCG). Nested KVM unusable (`dmesg` `kvm_spurious_fault`) → must `-accel off` |
+| Cap UI Live approve via Relay | **FAIL** — System/Pixel Launcher ANR; Cap process intermittent; no Cap device approve; Relay handoff left `pending_review` |
+
+Do **not** mark Phase-1 gate B (Cap approve) PASS on this box. Re-run on a host with working KVM / Android Studio emulator:
 
 ```bash
 git clone https://github.com/KyleYangSde/context-bridge.git
 cd context-bridge && npm i && npm run build
-# PC: start local-api + Relay (must show bind 0.0.0.0:17832)
 npm run start:local-api
-npm run start:relay   # phone_url prints LAN IP
+npm run start:relay   # bind 0.0.0.0:17832 — phone_url for LAN
 
 cd ui
-# Emulator → host loopback alias for Relay (NOT :17831)
 echo 'VITE_RELAY_URL=http://10.0.2.2:17832' > .env.production.local
+echo 'VITE_API_MODE=live' >> .env.production.local
 npm run build && npx cap sync android
-npx cap open android   # Run on emulator
+# write android/local.properties: sdk.dir=<ANDROID_HOME>
+cd android && ./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n bridge.context.app/.MainActivity
+# PC tray Live write → Cap Live → Approve → Relay state=approved
 ```
 
-- Phone/Cap talks **only** to Relay (`10.0.2.2:17832` on emulator, or PC LAN IP on a real device).
-- Never point Cap at `127.0.0.1:17831` / local-api.
-- Flow: PC tray Live write (+ Relay uplink) → emulator opens Cap → approve via Relay PATCH → tray status updates.
+- Phone/Cap → **Relay `:17832` only** (`10.0.2.2` on emulator, or PC LAN IP on device).
+- Never point Cap at `:17831` / local-api.
 
-Real device on same LAN: set `VITE_RELAY_URL=http://<PC-LAN-IP>:17832` (box example `172.30.0.2`; your home PC will differ), rebuild + `cap sync`.
 
 ## Evidence paths (box)
 
