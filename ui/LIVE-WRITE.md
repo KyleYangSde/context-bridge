@@ -15,7 +15,7 @@
 1. `npm run start:local-api` → `:17831`
 2. `npm run start:relay` → `:17832`
 3. `npm run dev:web` → http://127.0.0.1:5173/?mode=live
-4. **Desktop / tray**: pick source → **写入** → `PUT :17831/v1/handoff` → Relay `PUT`
+4. **Desktop / tray**: pick source → **写入** → `PUT :17831/v1/handoff` → Relay `PUT` with `force:true` (slot locked in `pending_review`/`approved` returns 409 `handoff_locked` otherwise)
 5. **Mobile view in demo chrome**: may still mirror via App paths used in demo; for Cap-accurate path use `?shell=mobile&mode=live` (Relay GET/PATCH only)
 6. Banner / tray status → `approved`
 

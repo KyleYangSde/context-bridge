@@ -133,6 +133,8 @@ export async function relayPatchStatus(input: {
 export async function relayPutHandoff(input: {
   frontmatter: unknown
   body: string
+  /** Explicit supersede when slot is pending_review/approved (409 handoff_locked otherwise). */
+  force?: boolean
 }): Promise<HandoffResponse> {
   return withDeviceRetry('pc', () =>
     req<HandoffResponse>('/v1/handoff', {

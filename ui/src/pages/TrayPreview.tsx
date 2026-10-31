@@ -248,6 +248,7 @@ export function TrayPreview({
           await relayApi.relayPutHandoff({
             frontmatter: res.frontmatter,
             body: res.body,
+            force: true, // user tapped 写入 — supersede locked slot
           })
           // Mirror review state when local submit_review succeeded
           if (status.state === 'pending_review') {
