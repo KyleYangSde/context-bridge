@@ -12,7 +12,7 @@ Verified on box `2026-10-31` ~22:00 UTC+8. Repo: [KyleYangSde/context-bridge](ht
 | Vite tray/mobile HTML | **PASS** | `GET :5173/?shell=tray\|mobile&mode=live` → 200 + `#root` |
 | Electron Live tray **write card** | **PASS** | `verify/electron-tray.log` + `verify/electron-tray-live-write.png` — UI banner `已写入 · state → pending_review`; local-api goal `Electron Live verify write 2026-10-31T13:58:06.869Z` |
 | Cap mobile shell binds Relay only | **PASS (code)** | `ui/src/App.tsx`: Cap / `?shell=mobile` → Relay `:17832` only, never `:17831` |
-| Cap Android `assembleDebug` / emulator approve | **PARTIAL** | assembleDebug+install PASS; guest net DOWN → `adb reverse` + bake `127.0.0.1:17832`. Soft-accel ANR → no Cap APK approve shot. **Cap UI same shell** (`?shell=mobile&mode=live`) Relay approve **PASS** → `verify/cap-ui-relay-approve.png`, Relay `state=approved`. APK gate B still needs KVM host/device. |
+| Cap Android `assembleDebug` / emulator approve | **PASS** (home Mac) / box **DEBT** | Box: assemble+install PASS; soft-accel ANR blocked approve. **Home Mac Gate B PASS** (~00:59 Asia/Shanghai): Cap APK approve → Relay `state=approved` (`cap-mobile`); shot `~/context-bridge/verify/gateb-cap-approve.png`. Cap UI same shell also PASS → `verify/cap-ui-relay-approve.png`. |
 | Cap iOS device | **N/A** | Needs macOS + Xcode |
 
 ## Electron Live write (how)
@@ -37,7 +37,7 @@ Verified on box `2026-10-31` ~22:00 UTC+8. Repo: [KyleYangSde/context-bridge](ht
 | Emulator AVD `cb_api34` | Booted (~11 min TCG). Nested KVM unusable (`dmesg` `kvm_spurious_fault`) → must `-accel off` |
 | Cap UI Live approve via Relay | **FAIL** — System/Pixel Launcher ANR; Cap process intermittent; no Cap device approve; Relay handoff left `pending_review` |
 
-Do **not** mark Phase-1 gate B (Cap approve) PASS on this box. Re-run on a host with working KVM / Android Studio emulator:
+Gate B is **PASS on home Mac** (see supplement). On **this box** alone, do **not** claim Cap APK approve. Reproduce on a host with working KVM / Android Studio emulator:
 
 ```bash
 git clone https://github.com/KyleYangSde/context-bridge.git
@@ -80,3 +80,11 @@ adb shell am start -n bridge.context.app/.MainActivity
 - Cap APK on `cb_api34` (`-accel off`): splash → white screen / System UI ANR; WebView CDP often times out. Nested KVM (`-accel on`) hangs offline (CPU ~0%).
 - Cap **UI** Relay approve (identical React mobile shell via vite preview + headless Chrome): Live → 批准 → banner `live · relay approved`; Relay handoff `state=approved`. Evidence: `verify/cap-ui-relay-approve.png`.
 - Phase-1 gate B (Cap **APK** emulator approve screenshot): still **open** on box; unblock on machine with working KVM or a physical device.
+
+
+### Gate B home Mac (2026-11-01 ~00:59 Asia/Shanghai)
+
+- Host: `KyledeMacBook-Pro` (家庭电脑). Relay `http://127.0.0.1:17832` + `adb reverse`; APK baked `VITE_RELAY_URL=http://10.0.2.2:17832`.
+- Cap APK `bridge.context.app` → Live `pending_review` → 批准 → Relay `state=approved` (consumer=`cap-mobile`).
+- Evidence (home machine, not box): `~/context-bridge/verify/gateb-cap-approve.png`.
+- Honest: **Cap APK emulator approve PASS**; not dual-native (iOS still open); box soft-accel path remains DEBT.
