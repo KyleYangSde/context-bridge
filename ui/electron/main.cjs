@@ -7,7 +7,11 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, screen } = require('electro
 const path = require('node:path')
 
 const isDev = !app.isPackaged && process.env.CB_ELECTRON_PROD !== '1'
-const DEV_URL = process.env.CB_UI_URL || 'http://127.0.0.1:5173/?shell=tray'
+const DEV_URL =
+  process.env.CB_UI_URL ||
+  (process.env.CB_SHOW === '1'
+    ? 'http://127.0.0.1:5173/?shell=tray&mode=live'
+    : 'http://127.0.0.1:5173/?shell=tray')
 const POP_W = 400
 const POP_H = 620
 
@@ -43,6 +47,7 @@ function createWindow() {
   }
 
   win.on('blur', () => {
+    if (process.env.CB_SHOW === '1') return
     if (!win?.webContents.isDevToolsOpened()) win?.hide()
   })
   win.on('closed', () => {
@@ -107,6 +112,11 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin' && app.dock) app.dock.hide()
   createTray()
   createWindow()
+  if (process.env.CB_SHOW === '1' && win) {
+    win.show()
+    win.focus()
+    console.log('[cb-electron] CB_SHOW=1 visible', DEV_URL)
+  }
 })
 
 app.on('window-all-closed', (e) => {

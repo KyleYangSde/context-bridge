@@ -1,6 +1,7 @@
 /**
- * Client for @context-bridge/relay on 127.0.0.1:17832
+ * Client for @context-bridge/relay (:17832).
  * Pairing: POST /v1/devices → Bearer device token (not PC .bridge-token).
+ * Stale localStorage tokens 401 after Relay wipe — clear + re-register.
  */
 import type { HandoffState } from '../data/types'
 import type { HandoffResponse, HandoffStatusDto, HealthResponse } from './types'
@@ -22,6 +23,15 @@ function loadToken(): string | null {
 }
 
 let deviceToken: string | null = loadToken()
+
+export function clearDeviceToken() {
+  deviceToken = null
+  try {
+    localStorage.removeItem(LS_KEY)
+  } catch {
+    /* ignore */
+  }
+}
 
 function headers(): Headers {
   const h = new Headers({ 'content-type': 'application/json' })
@@ -48,23 +58,27 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!res.ok) {
     const err = body as { error?: string; message?: string }
-    throw new Error(
+    const e = new Error(
       `relay ${res.status} ${path}: ${err?.message || err?.error || res.statusText}`,
-    )
+    ) as Error & { status?: number }
+    e.status = res.status
+    throw e
   }
   return body as T
 }
 
 export async function relayHealth(): Promise<HealthResponse> {
-  // health is open
   const res = await fetch(`${ENV_URL}/health`)
   if (!res.ok) throw new Error(`relay health ${res.status}`)
   return res.json()
 }
 
+/** Register (or return cached). force=true clears cache first. */
 export async function ensureDevice(
   role: 'pc' | 'ios' | 'other' = 'pc',
+  force = false,
 ): Promise<string> {
+  if (force) clearDeviceToken()
   if (deviceToken) return deviceToken
   const reg = await req<{ token: string; device_id: string }>('/v1/devices', {
     method: 'POST',
@@ -79,9 +93,28 @@ export async function ensureDevice(
   return deviceToken
 }
 
-export async function relayGetHandoff(): Promise<HandoffResponse> {
-  await ensureDevice('pc')
-  return req<HandoffResponse>('/v1/handoff')
+async function withDeviceRetry<T>(
+  role: 'pc' | 'ios' | 'other',
+  run: () => Promise<T>,
+): Promise<T> {
+  await ensureDevice(role)
+  try {
+    return await run()
+  } catch (e) {
+    const status = (e as { status?: number })?.status
+    const msg = e instanceof Error ? e.message : String(e)
+    if (status === 401 || /\b401\b/.test(msg) || msg.includes('unauthorized')) {
+      await ensureDevice(role, true)
+      return run()
+    }
+    throw e
+  }
+}
+
+export async function relayGetHandoff(
+  role: 'pc' | 'ios' | 'other' = 'pc',
+): Promise<HandoffResponse> {
+  return withDeviceRetry(role, () => req<HandoffResponse>('/v1/handoff'))
 }
 
 export async function relayPatchStatus(input: {
@@ -89,22 +122,24 @@ export async function relayPatchStatus(input: {
   reject_reason?: string | null
   consumer?: { id: string; event?: string }
 }): Promise<HandoffStatusDto> {
-  await ensureDevice('ios')
-  return req<HandoffStatusDto>('/v1/handoff/status', {
-    method: 'PATCH',
-    body: JSON.stringify(input),
-  })
+  return withDeviceRetry('ios', () =>
+    req<HandoffStatusDto>('/v1/handoff/status', {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    }),
+  )
 }
 
 export async function relayPutHandoff(input: {
   frontmatter: unknown
   body: string
 }): Promise<HandoffResponse> {
-  await ensureDevice('pc')
-  return req<HandoffResponse>('/v1/handoff', {
-    method: 'PUT',
-    body: JSON.stringify(input),
-  })
+  return withDeviceRetry('pc', () =>
+    req<HandoffResponse>('/v1/handoff', {
+      method: 'PUT',
+      body: JSON.stringify(input),
+    }),
+  )
 }
 
 export function getCachedDeviceToken(): string | null {

@@ -83,8 +83,9 @@ export default function App() {
       if (isMobileShell(shell)) {
         // Cap mobile: Relay only (device + GET handoff) — never :17831
         await relayApi.relayHealth()
-        await relayApi.ensureDevice(phoneRelayRole())
-        const h = await relayApi.relayGetHandoff()
+        // Force re-pair: Relay may have wiped in-memory/persist tokens
+        await relayApi.ensureDevice(phoneRelayRole(), true)
+        const h = await relayApi.relayGetHandoff(phoneRelayRole())
         const card = handoffToCard('live-current', h)
         setCards([card, ...rest])
         setSelectedId(card.id)
@@ -162,7 +163,6 @@ export default function App() {
     try {
       if (isMobileShell(shell)) {
         // Cap mobile: PATCH Relay status only
-        await relayApi.ensureDevice(phoneRelayRole())
         const status = await relayApi.relayPatchStatus({
           state,
           reject_reason: state === 'rejected' ? reject_reason ?? null : null,
