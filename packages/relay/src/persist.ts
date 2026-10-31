@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createMemoryStore,
   type Device,
@@ -15,11 +16,14 @@ export type PersistedRelay = {
   pushLog: PushLogEntry[];
 };
 
+/** Always packages/relay/data — never join(cwd, "packages/relay/data") (doubles when cwd is the package). */
 export function defaultRelayDataDir(): string {
-  return (
-    process.env.BRIDGE_RELAY_DATA_DIR?.trim() ||
-    join(process.cwd(), "packages", "relay", "data")
-  );
+  if (process.env.BRIDGE_RELAY_DATA_DIR?.trim()) {
+    return process.env.BRIDGE_RELAY_DATA_DIR.trim();
+  }
+  // src/persist.ts or dist/persist.js → package root → data/
+  const here = dirname(fileURLToPath(import.meta.url));
+  return join(here, "..", "data");
 }
 
 export function loadPersistedStore(dir: string): RelayStore {
