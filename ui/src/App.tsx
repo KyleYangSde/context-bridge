@@ -31,6 +31,8 @@ function phoneRelayRole(): 'ios' | 'other' {
 }
 
 function readInitialMode(): ApiMode {
+  // Cap native gate: always Relay live (no mock fixtures on device)
+  if (Capacitor.isNativePlatform()) return 'live'
   const q = new URLSearchParams(window.location.search).get('mode')
   if (q === 'live' || q === 'mock') return q
   const env = import.meta.env.VITE_API_MODE

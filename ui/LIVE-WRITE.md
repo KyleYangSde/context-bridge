@@ -25,7 +25,7 @@ Mobile Cap-path: http://127.0.0.1:5173/?shell=mobile&mode=live
 API smoke: `npm run smoke:first-gate` from repo root.
 
 ## Cap device
-See [`../CAP-NATIVE.md`](../CAP-NATIVE.md) — set `VITE_RELAY_URL` to LAN IP, `npm run cap:sync`.
+See [`../CAP-NATIVE.md`](../CAP-NATIVE.md). Emulator + `adb reverse`: bake `VITE_RELAY_URL=http://127.0.0.1:17832` and **`VITE_API_MODE=live`** (native also forces live in `App.tsx`). Then `npm run build && npx cap sync` / assembleDebug.
 
 ## Changed paths
 - `ui/src/pages/TrayPreview.tsx` — live PUT + Relay + review (PC)
