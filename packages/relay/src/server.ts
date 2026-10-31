@@ -48,11 +48,35 @@ const LOCAL_ORIGINS = new Set([
   "http://localhost:5174",
   "http://127.0.0.1:1420",
   "http://localhost:1420",
+  "http://localhost",
+  "https://localhost",
+  "capacitor://localhost",
+  "ionic://localhost",
 ]);
+
+/** Cap WebView + private-LAN Vite/dev origins for phone on same Wi‑Fi */
+function isAllowedOrigin(origin: string): boolean {
+  if (LOCAL_ORIGINS.has(origin)) return true;
+  try {
+    const u = new URL(origin);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    const h = u.hostname;
+    if (h === "localhost" || h === "127.0.0.1") return true;
+    const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(h);
+    if (!m) return false;
+    const a = Number(m[1]), b = Number(m[2]);
+    if (a === 10) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 function applyCors(req: IncomingMessage, res: ServerResponse): boolean {
   const origin = req.headers.origin;
-  if (typeof origin === "string" && LOCAL_ORIGINS.has(origin)) {
+  if (typeof origin === "string" && isAllowedOrigin(origin)) {
     res.setHeader("access-control-allow-origin", origin);
     res.setHeader("vary", "Origin");
     res.setHeader("access-control-allow-credentials", "true");
@@ -71,7 +95,7 @@ function applyCors(req: IncomingMessage, res: ServerResponse): boolean {
 }
 
 export function createRelayServer(opts: RelayOptions = {}) {
-  const host = opts.host ?? "127.0.0.1";
+  const host = opts.host ?? process.env.BRIDGE_RELAY_HOST ?? "0.0.0.0";
   const port = opts.port ?? Number(process.env.BRIDGE_RELAY_PORT ?? 17832);
   const store = opts.store ?? createMemoryStore();
 

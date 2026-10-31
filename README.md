@@ -13,7 +13,7 @@ PC writes cards → Sync Relay → phone approves/rejects → tray status update
 | `packages/core` | Types, parse/serialize, `secretsScan`, state machine |
 | `packages/adapters` | Producer adapters (Codex/Grok file export + mocks) |
 | `packages/local-api` | PC loopback HTTP `127.0.0.1:17831` |
-| `packages/relay` | Sync Relay `127.0.0.1:17832` (APNs stub) |
+| `packages/relay` | Sync Relay default `0.0.0.0:17832` (LAN; APNs stub) |
 | `ui/` | Shared React skin + Electron tray + Cap `android/` · `ios/` |
 | `HANDOFF.v1.md` · `LOCAL-API.v0.md` · `SYNC.v0.md` · `ADAPTER.v0.md` | Contracts |
 | `CAP-NATIVE.md` | Cap / device run notes |
@@ -37,7 +37,7 @@ npm run build
 npm run start:local-api          # http://127.0.0.1:17831
 
 # 2) Sync Relay
-npm run start:relay              # http://127.0.0.1:17832
+npm run start:relay              # bind 0.0.0.0:17832 — logs phone_url for Cap
 
 # 3) Web UI (mock by default; toggle Live in header)
 npm run dev:web                  # http://127.0.0.1:5173
@@ -69,7 +69,9 @@ npm run dev:electron             # needs a display (Xvfb on headless Linux)
 
 ### Capacitor (Android / iOS)
 
-Platforms are already under `ui/android` and `ui/ios`. Phone talks **Relay only**.
+Platforms are already under `ui/android` and `ui/ios`. Phone talks **Relay only** — see `CAP-NATIVE.md`.
+
+Relay defaults to **`0.0.0.0:17832`**. On the same Wi‑Fi as the phone, set Cap `VITE_RELAY_URL` to the printed `phone_url` (or `http://<your-LAN-IP>:17832`). Never use `:17831`. Loopback-only PC: `BRIDGE_RELAY_HOST=127.0.0.1 npm run start:relay`.
 
 ```bash
 cd ui
