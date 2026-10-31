@@ -9,11 +9,19 @@ import {
   type RelayStore,
   type DeviceRole,
 } from "./store.js";
+import {
+  defaultRelayDataDir,
+  loadPersistedStore,
+  savePersistedStore,
+} from "./persist.js";
 
 export type RelayOptions = {
   host?: string;
   port?: number;
   store?: RelayStore;
+  /** Persist devices/handoff across restarts (default: on unless port===0 or BRIDGE_RELAY_PERSIST=0) */
+  persist?: boolean;
+  dataDir?: string;
 };
 
 function readBody(req: IncomingMessage): Promise<string> {
@@ -97,7 +105,21 @@ function applyCors(req: IncomingMessage, res: ServerResponse): boolean {
 export function createRelayServer(opts: RelayOptions = {}) {
   const host = opts.host ?? process.env.BRIDGE_RELAY_HOST ?? "0.0.0.0";
   const port = opts.port ?? Number(process.env.BRIDGE_RELAY_PORT ?? 17832);
-  const store = opts.store ?? createMemoryStore();
+  const dataDir = opts.dataDir ?? defaultRelayDataDir();
+  const persistEnabled =
+    opts.persist ??
+    (process.env.BRIDGE_RELAY_PERSIST !== "0" && port !== 0 && opts.store == null);
+  const store =
+    opts.store ??
+    (persistEnabled ? loadPersistedStore(dataDir) : createMemoryStore());
+  const persist = (): void => {
+    if (!persistEnabled) return;
+    try {
+      savePersistedStore(dataDir, store);
+    } catch (e) {
+      console.warn("[relay] persist save failed:", e);
+    }
+  };
 
   const server = createServer(async (req, res) => {
     try {
@@ -113,6 +135,7 @@ export function createRelayServer(opts: RelayOptions = {}) {
           service: "context-bridge-relay",
           devices: store.devices.size,
           has_handoff: store.handoff != null,
+          persist: persistEnabled,
         });
       }
 
@@ -129,6 +152,7 @@ export function createRelayServer(opts: RelayOptions = {}) {
           label: body.label,
           apns_token: body.apns_token,
         });
+        persist();
         return json(res, 201, {
           device_id: device.id,
           role: device.role,
@@ -166,6 +190,7 @@ export function createRelayServer(opts: RelayOptions = {}) {
         const body = raw ? JSON.parse(raw) : {};
         try {
           const result = putHandoffOnRelay(store, body);
+          persist();
           return json(res, 200, {
             frontmatter: result.doc.frontmatter,
             body: result.doc.body,
@@ -192,6 +217,7 @@ export function createRelayServer(opts: RelayOptions = {}) {
             reject_reason: body.reject_reason,
             consumer: body.consumer ?? { id: device.role, event: body.state },
           });
+          persist();
           return json(res, 200, status);
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);

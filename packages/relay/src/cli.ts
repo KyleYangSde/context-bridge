@@ -1,5 +1,6 @@
 import { networkInterfaces } from "node:os";
 import { createRelayServer } from "./server.js";
+import { defaultRelayDataDir } from "./persist.js";
 
 function guessLanIpv4(): string | null {
   const nets = networkInterfaces();
@@ -31,7 +32,9 @@ console.log(
       service: "context-bridge-relay",
       bind: `http://${info.host}:${info.port}`,
       phone_url: phoneUrl,
-      env: "BRIDGE_RELAY_HOST (default 0.0.0.0), BRIDGE_RELAY_PORT (default 17832)",
+      env: "BRIDGE_RELAY_HOST (default 0.0.0.0), BRIDGE_RELAY_PORT (default 17832), BRIDGE_RELAY_DATA_DIR, BRIDGE_RELAY_PERSIST=0 to disable",
+      data_dir: defaultRelayDataDir(),
+      persist: process.env.BRIDGE_RELAY_PERSIST !== "0",
       pairing: 'POST /v1/devices { role: "pc"|"ios", label?, apns_token? }',
       note: "Phone/Cap: use phone_url only — never PC local-api :17831. iOS PUT body → 403. APNs stub → GET /v1/push-log",
     },

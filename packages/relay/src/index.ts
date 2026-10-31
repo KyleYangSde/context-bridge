@@ -8,3 +8,10 @@ export {
   type Device,
   type DeviceRole,
 } from "./store.js";
+
+export {
+  defaultRelayDataDir,
+  loadPersistedStore,
+  savePersistedStore,
+  type PersistedRelay,
+} from "./persist.js";
