@@ -34,7 +34,7 @@ export function StateLegend() {
     'expired',
   ]
   return (
-    <div className="cb-state-legend" role="list" aria-label="Handoff states">
+    <div className="cb-state-legend" role="list" aria-label="交接卡状态">
       {states.map((s) => (
         <StateBadge key={s} state={s} size="sm" />
       ))}

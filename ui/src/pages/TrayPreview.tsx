@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { HandoffCardModel, HandoffTool } from '../data/types'
+import { STATE_LABELS } from '../data/types'
 import { emptyDraftCard, primaryMock } from '../data/mockHandoffs'
 import { HandoffCard } from '../components/HandoffCard'
 import { SourcePicker } from '../components/SourcePicker'
@@ -262,7 +263,7 @@ export function TrayPreview({
             }
           }
         } catch (e) {
-          setWriteWarning(`Relay warning: ${e instanceof Error ? e.message : String(e)}`)
+          setWriteWarning(`中继警告: ${e instanceof Error ? e.message : String(e)}`)
         }
         setCard(handoffToCard({ ...res, status }))
         setWrote(true)
@@ -357,11 +358,11 @@ export function TrayPreview({
           <span className="cb-dot cb-dot--r" />
           <span className="cb-dot cb-dot--y" />
           <span className="cb-dot cb-dot--g" />
-          <span className="cb-win__title">Context Bridge</span>
+          <span className="cb-win__title">上下文中继</span>
         </div>
       ) : (
         <div className="cb-win__chrome cb-win__chrome--shell">
-          <span className="cb-win__title">Context Bridge</span>
+          <span className="cb-win__title">上下文中继</span>
           {mode === 'live' ? (
             <button
               type="button"
@@ -378,7 +379,7 @@ export function TrayPreview({
       <div className="cb-win__body">
         {!isShell ? (
           <small className="cb-win__note">
-            {mode === 'live' ? 'live · :17831' : 'mock'}
+            {mode === 'live' ? '真实 · :17831' : '演示'}
           </small>
         ) : null}
         <SourcePicker value={source} onChange={onSourceChange} disabled={busy} />
@@ -387,7 +388,7 @@ export function TrayPreview({
           <div className="cb-empty" role="status">
             <div className="cb-empty__title">还没有交接卡</div>
             <p className="cb-empty__body">
-              选来源后填写目标，点「写入 .agent-bridge/」创建第一张卡。
+              选来源后填写目标，点「写入交接卡」创建第一张卡。
             </p>
           </div>
         ) : null}
@@ -399,7 +400,7 @@ export function TrayPreview({
             onClick={() => void onGenerate()}
             disabled={busy}
           >
-            生成 HANDOFF
+            生成交接卡
           </button>
           <button
             type="button"
@@ -407,7 +408,7 @@ export function TrayPreview({
             onClick={() => void onWrite()}
             disabled={busy || !canWrite}
           >
-            写入 .agent-bridge/
+            写入交接卡
           </button>
         </div>
 
@@ -421,7 +422,7 @@ export function TrayPreview({
         ) : null}
         {wrote ? (
           <div className="cb-alert cb-alert--ok" role="status">
-            已写入 · state → {card.state} · 可上行 Relay / 待审
+            已写入 · 状态 → {STATE_LABELS[card.state].zh} · 可上行中继 / 待审
           </div>
         ) : null}
 
@@ -476,7 +477,7 @@ export function TrayPreview({
           </div>
         ) : (
           <p className="cb-win__note">
-            当前状态不可再审（{card.state}
+            当前状态不可再审（{STATE_LABELS[card.state].zh}
             {card.reject_reason ? ` · ${card.reject_reason}` : ''}）
           </p>
         )}
@@ -500,7 +501,7 @@ export function TrayPreview({
       <div className="cb-desktop">
         <div className="cb-menubar">
           <span className="cb-menubar__spacer" />
-          <div className="cb-tray-icon" title="Context Bridge">
+          <div className="cb-tray-icon" title="上下文中继">
             CB
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import type { HandoffCardModel, HandoffState } from './data/types'
+import { STATE_LABELS } from './data/types'
 import { mockHandoffs } from './data/mockHandoffs'
 import { TrayPreview } from './pages/TrayPreview'
 import { MobileList } from './pages/MobileList'
@@ -92,7 +93,7 @@ export default function App() {
         setCards([card, ...rest])
         setSelectedId(card.id)
         setStatusMsg(
-          `live · relay ${relayApi.relayBase()} · state=${h.status.state}`,
+          `真实 · 中继 ${relayApi.relayBase()} · 状态=${STATE_LABELS[h.status.state].zh}`,
         )
         return
       }
@@ -103,22 +104,22 @@ export default function App() {
       setCards([card, ...rest])
       setSelectedId(card.id)
       setStatusMsg(
-        `live · local-api ${localApi.localApiBase()} · state=${h.status.state}`,
+        `真实 · local-api ${localApi.localApiBase()} · 状态=${STATE_LABELS[h.status.state].zh}`,
       )
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
       if (msg.includes('404') || msg.includes('not_found')) {
         setErrorMsg(null)
-        setStatusMsg('live · 暂无交接卡 — 可在托盘写入')
+        setStatusMsg('真实 · 暂无交接卡 — 可在托盘写入')
         setCards([])
         setSelectedId(null)
       } else if (shell === 'demo') {
         setErrorMsg(msg)
-        setStatusMsg('live failed — still showing mock cards')
+        setStatusMsg('真实失败 — 仍显示演示卡')
         setCards(mockHandoffs)
       } else {
         setErrorMsg(msg)
-        setStatusMsg('live failed')
+        setStatusMsg('真实失败')
         setCards([])
         setSelectedId(null)
       }
@@ -133,7 +134,7 @@ export default function App() {
     } else {
       setCards(mockHandoffs)
       setSelectedId(mockHandoffs[0]?.id ?? null)
-      setStatusMsg('mock · offline fixtures')
+      setStatusMsg('演示 · 离线样例')
       setErrorMsg(null)
     }
   }, [mode, loadLive])
@@ -157,7 +158,7 @@ export default function App() {
             : c,
         ),
       )
-      setStatusMsg(`mock · ${state}`)
+      setStatusMsg(`演示 · ${STATE_LABELS[state].zh}`)
       return
     }
 
@@ -181,7 +182,7 @@ export default function App() {
               : c,
           ),
         )
-        setStatusMsg(`live · relay ${status.state}`)
+        setStatusMsg(`真实 · 中继 ${STATE_LABELS[status.state].zh}`)
         return
       }
 
@@ -220,11 +221,11 @@ export default function App() {
           consumer: { id: 'ui-shell', event: state },
         })
         setStatusMsg(
-          `live · local-api ${status.state} · relay mirrored`,
+          `真实 · local-api ${STATE_LABELS[status.state].zh} · 中继已镜像`,
         )
       } catch (re) {
         setStatusMsg(
-          `live · local-api ${status.state} · relay skip: ${
+          `真实 · local-api ${STATE_LABELS[status.state].zh} · 中继跳过: ${
             re instanceof Error ? re.message : String(re)
           }`,
         )
@@ -247,7 +248,7 @@ export default function App() {
       {chrome ? (
         <header className="cb-app__header">
           <div>
-            <h1>Context Bridge UI</h1>
+            <h1>上下文中继</h1>
             <p>
               共享 React 皮 · Electron 托盘 + Capacitor 手机 · 无 raw transcript
             </p>
@@ -261,7 +262,7 @@ export default function App() {
                 className={mode === 'mock' ? 'is-active' : ''}
                 onClick={() => setMode('mock')}
               >
-                Mock
+                演示
               </button>
               <button
                 type="button"
@@ -269,9 +270,9 @@ export default function App() {
                 aria-selected={mode === 'live'}
                 className={mode === 'live' ? 'is-active' : ''}
                 onClick={() => setMode('live')}
-                title="PC/demo → :17831 (+Relay); Cap mobile → :17832 only"
+                title="PC/演示 → :17831（+中继）；Cap 手机 → :17832 专用"
               >
-                Live
+                真实
               </button>
             </div>
             <div className="cb-app__toggle" role="tablist" aria-label="Demo view">
@@ -304,14 +305,14 @@ export default function App() {
               className={mode === 'mock' ? 'is-active' : ''}
               onClick={() => setMode('mock')}
             >
-              Mock
+              演示
             </button>
             <button
               type="button"
               className={mode === 'live' ? 'is-active' : ''}
               onClick={() => setMode('live')}
             >
-              Live
+              真实
             </button>
           </div>
           {busy ? <span className="cb-app__busy">…</span> : null}

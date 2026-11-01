@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { HandoffCardModel, HandoffState } from '../data/types'
+import { STATE_LABELS } from '../data/types'
 import { HandoffCard } from '../components/HandoffCard'
 import './Mobile.css'
 
@@ -88,12 +89,12 @@ export function MobileDetail({ card, onBack, onStatusChange, shell }: Props) {
               </button>
             </div>
             <p className="cb-phone__note">
-              iOS 不 PUT 正文 · 只 PATCH status（经 Sync Relay）
+              iOS 不 PUT 正文 · 只 PATCH status（经中继）
             </p>
           </div>
         ) : (
           <p className="cb-phone__note">
-            当前状态不可再审（{card.state}
+            当前状态不可再审（{STATE_LABELS[card.state].zh}
             {card.reject_reason ? ` · ${card.reject_reason}` : ''}）
           </p>
         )}
