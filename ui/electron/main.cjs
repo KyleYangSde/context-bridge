@@ -82,7 +82,7 @@ function toggleWindow() {
 function createTray() {
   const img = nativeImage.createFromPath(iconPath())
   tray = new Tray(img.isEmpty() ? nativeImage.createEmpty() : img)
-  tray.setToolTip('Context Bridge')
+  tray.setToolTip('上下文中继')
   tray.on('click', toggleWindow)
   tray.on('right-click', () => {
     const menu = Menu.buildFromTemplate([

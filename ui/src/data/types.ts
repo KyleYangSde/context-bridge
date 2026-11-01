@@ -64,7 +64,7 @@ export const STATE_LABELS: Record<HandoffState, { zh: string; en: string }> = {
   pending_review: { zh: '待审', en: 'Pending' },
   approved: { zh: '已批准', en: 'Approved' },
   rejected: { zh: '已驳回', en: 'Rejected' },
-  consumed: { zh: '已消费', en: 'Consumed' },
+  consumed: { zh: '已接手', en: 'Consumed' },
   superseded: { zh: '已替代', en: 'Superseded' },
   expired: { zh: '已过期', en: 'Expired' },
 }

@@ -20,7 +20,7 @@ export const mockHandoffs: HandoffCardModel[] = [
         'PC 与 iOS 同步开；壳走 Capacitor 同皮',
       ],
       constraints: ['不写 raw transcript', '密钥扫描不过则拒写'],
-      open_questions: ['用户是否确认 Context Bridge MVP？'],
+      open_questions: ['用户是否确认上下文中继 MVP？'],
       files_touched: [
         'context-bridge/HANDOFF.v1.md',
         'context-bridge/design/wireframe-pc-tray.html',
