@@ -29,7 +29,7 @@ export function MobileList({ cards, selectedId, onSelect, shell }: Props) {
     <div className={`cb-phone${shell ? ' cb-phone--shell' : ''}`}>
       {shell ? null : <div className="cb-phone__notch" aria-hidden />}
       <header className="cb-phone__bar">
-        <h1>交接</h1>
+        <h1>交接卡</h1>
         <span className="cb-phone__bar-sub">中继</span>
       </header>
       {cards.length === 0 ? (

@@ -388,7 +388,7 @@ export function TrayPreview({
           <div className="cb-empty" role="status">
             <div className="cb-empty__title">还没有交接卡</div>
             <p className="cb-empty__body">
-              选来源后填写目标，点「写入 .agent-bridge/」创建第一张卡。
+              选来源后填写目标，点「写入交接卡」创建第一张卡。
             </p>
           </div>
         ) : null}
@@ -408,7 +408,7 @@ export function TrayPreview({
             onClick={() => void onWrite()}
             disabled={busy || !canWrite}
           >
-            写入 .agent-bridge/
+            写入交接卡
           </button>
         </div>
 
